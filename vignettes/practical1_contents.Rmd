@@ -1,0 +1,204 @@
+```{r}
+library(knitr)
+# opts_knit$set(out.format = "latex")
+knit_theme$set(knit_theme$get("greyscale0"))
+
+options(replace.assign=FALSE,width=50)
+
+opts_chunk$set(fig.path='figure/graphics-', 
+               cache.path='cache/graphics-', 
+               fig.align='center', 
+               dev='pdf', fig.width=5, fig.height=5, 
+               fig.show='hold', cache=FALSE, par=TRUE)
+knit_hooks$set(crop=hook_pdfcrop)
+```
+
+
+## A new table
+
+To begin this practical we will add some data to our database. The table below gives some data on different cars and their fuel economy.
+
+```{r, results="asis"}
+suppressPackageStartupMessages(library(dplyr))
+set.seed(1)
+data("FuelEconomy",package = "jRsql")
+df = cars2010 %>% sample_n(6) %>% select(EngDispl, NumCyl, Transmission, FE) 
+df[6,1] = 7
+df %>%
+  knitr::kable(format = "html")
+```
+
+To create your connection to the database 
+
+```{r, echo = TRUE, eval = FALSE}
+library(RPostgreSQL)
+drv = dbDriver("PostgreSQL")
+# everyones user name and password is different
+# database name is the same as your user name
+con = dbConnect(drv, user = "user.name", password = "user.password", dbname = "user.dbname")
+```
+
+
+  (1) Create a new table called "fuel_economy" in your database with the appropriate variable types for the columns. Note that NumCyl should be an integer. 
+    ```{r, eval = FALSE}
+    statement = "
+    CREATE TABLE fuel_economy (
+      EngDispl double precision,
+      NumCyl integer, 
+      Transmission text,
+      FE double precision
+    );
+    "
+    dbExecute(con, statement)
+    ```
+      
+  (1) Populate your new table with the data. (Remeber `INSERT INTO` and `VALUES`)
+  
+    ```{r, eval = FALSE}
+    statement = "
+    INSERT INTO fuel_economy (EngDispl, NumCyl, Transmission, FE)
+      VALUES 
+      (2.0, 4, 'M5', 46.4387),
+      (3.6, 6, 'S6', 40.0000),
+      (2.5, 4, 'S4', 32.9103),
+      (5.7, 8, 'A5', 26.0000),
+      (1.8, 4, 'A4', 47.2000),
+      (7.0, 6, 'A6', 36.0000);
+    "
+    dbExecute(con, statement)
+    ```
+  
+  (1) Unfortunately the displacement value is wrong for the last car in the data set here. We should change the 7.0 to a 3.5. Use `UPDATE` and `SET` to amend the data.
+  
+    ```{r, eval = FALSE}
+    statement = "
+    UPDATE fuel_economy
+      SET EngDispl = 3.5 
+      WHERE EngDispl = 7.0;
+    "
+    dbExecute(con, statement)
+    ```
+  
+  (1) Add a new text column called "gearbox", we will use this to have nicer labels for the transmission variable.
+  
+    ```{r, eval = FALSE}
+    statement = "
+    ALTER TABLE fuel_economy
+      ADD COLUMN gearbox text;
+    "
+    dbExecute(con, statement)
+    ```
+  
+## Something new
+
+We haven't spoken about SQL transaction during the lectures. Essentially a transaction is a collection of SQL clauses that we want to either all happen, or none happen. Essentially we want to create a guarantee that the table modification can't partially complete. Imagine the simple scenario of a bank monitoring balances of it's customers. Let's say Alice wants to pay Ben £100. In our hypothetical scenario we could use the following code to update the data table.
+
+```{sql, echo = TRUE, eval = FALSE}
+UPDATE balances
+  SET amount = amount - 100
+  WHERE customer = 'Alice';
+UPDATE balances
+  SET amount = amount + 100
+  WHERE customer = 'Ben';
+```
+
+That is we make two modifications, one that subtracts the balance from Alice and a second which credits it to Ben. The bank manager will want a guarantee that either both of these modifications have been made, or none of them have. They certainly wouldn't be happy if Ben was credited £100 without subtracting it from Alice. Likewise Alice would be very upset if she spent £100 but Ben never received it. A transaction gives us a guarantee that if something goes wrong part way through the sequence of statements (perhaps someone else is modifying the database at the same time) that none of the data has been changed.
+
+In PostgreSQL we can create our transaction by surrounding our statements with `BEGIN` and `COMMIT`
+
+```{sql, echo = TRUE, eval = FALSE}
+BEGIN;
+UPDATE balances
+  SET amount = amount - 100
+  WHERE customer = 'Alice';
+UPDATE balances
+  SET amount = amount + 100
+  WHERE customer = 'Ben';
+COMMIT;
+```
+
+The `DBI` R package also provides a useful function for this
+
+```{r, echo = TRUE, eval = FALSE}
+dbWithTransaction(
+  con, 
+  {
+    dbExecute(con, "UPDATE balances SET amount = amount - 100 WHERE customer = 'Alice';")
+    dbExecute(con, "UPDATE balances SET amount = amount + 100 WHERE customer = 'Ben';")
+  }
+)
+```
+
+  (1) Try using a transaction to update the "gearbox" column you added to your table based on the values of "Transmission". 
+    + Whenever transmission starts with an "M" give gearbox the value "manual"
+    + When it starts with "S" give "sequential"
+    + When it starts = "A" give "automatic"
+    
+    ```{r, eval = FALSE}
+    statement = "
+    BEGIN;
+    UPDATE fuel_economy
+      SET gearbox = 'manual'
+      WHERE transmission LIKE 'M%';
+    UPDATE fuel_economy
+      SET gearbox = 'sequential'
+      WHERE transmission LIKE 'S%';
+    UPDATE fuel_economy
+      SET gearbox = 'automatic'
+      WHERE transmission LIKE 'A%';
+    COMMIT;
+    "
+    dbExecute(con, statement)
+    ```
+    
+## The full cars data
+
+The full cars data set from which the above subset is taken is part of the course package and can be loaded with
+
+```{r, echo = TRUE, eval = FALSE}
+data("FuelEconomy", package = "jRsql")
+```
+
+We can copy this data into the database with, to make life easier for ourselves we will turn the column names to all lower case first
+
+```{r, eval = FALSE, echo = TRUE}
+colnames(cars2010) = tolower(colnames(cars2010))
+dbWriteTable(con, name = "cars", cars2010)
+```
+
+The remaining questions concern this data, solutions should be obtained using SQL queries, no cheating with pure R code.
+
+(1) How many cars are there with `engdispl >= 3.0`?
+
+    ```{r, eval = FALSE}
+    query = "
+    SELECT * FROM cars
+      WHERE engdispl >= 3.0;
+    "
+    df = dbGetQuery(con,query)
+    nrow(df)
+    # 695
+    ```
+
+(1) What is the most efficient car (highest value of fe)?
+
+    ```{r, eval = FALSE}
+    query = "
+    SELECT fe FROM cars
+      ORDER BY fe DESC
+      LIMIT 1;
+    "
+    dbGetQuery(con,query)
+    # 69.6404
+    ```
+
+(1) How many different types of transmission are there?
+
+    ```{r, eval = FALSE}
+    query = "
+    SELECT DISTINCT transmission FROM cars;
+    "
+    dbGetQuery(con,query)
+    # 16
+    ```
+

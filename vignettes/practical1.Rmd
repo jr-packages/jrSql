@@ -1,0 +1,17 @@
+---
+title: "Practical 1"
+author: "Jumping Rivers"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{practical1}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(results = "hide", echo = FALSE)
+```
+
+```{r, child = "practical1_contents.Rmd"}
+```
+

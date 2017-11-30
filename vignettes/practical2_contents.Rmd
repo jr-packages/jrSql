@@ -1,0 +1,120 @@
+```{r, echo = FALSE}
+library(knitr)
+# opts_knit$set(out.format = "latex")
+knit_theme$set(knit_theme$get("greyscale0"))
+
+options(replace.assign=FALSE,width=50)
+
+opts_chunk$set(fig.path='figure/graphics-', 
+               cache.path='cache/graphics-', 
+               fig.align='center', 
+               dev='pdf', fig.width=5, fig.height=5, 
+               fig.show='hold', cache=FALSE, par=TRUE)
+knit_hooks$set(crop=hook_pdfcrop)
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+## `dplyr` and databases
+
+To being with we will grab the flights data that we were using in the final part of the lectures. You can install the package that contains this data with 
+
+```{r, eval = FALSE}
+install.packages("nycflights13")
+library(nycflights13)
+
+## remember to make the connection to your database first (see chapter 1)
+dbWriteTable(con, "airlines",airlines,overwrite = TRUE, row.names = FALSE)
+dbWriteTable(con,"airports",airports, overwrite = TRUE, row.names = FALSE)
+dbWriteTable(con, "flights", flights, overwrite = TRUE, row.names = FALSE)
+dbWriteTable(con, "planes", planes, overwrite = TRUE, row.names = FALSE)
+dbWriteTable(con, "weather", weather, overwrite = TRUE, row.names = FALSE)
+```
+
+We can then get the R objects that represent these tables in a way that `dplyr` understands
+
+```{r}
+library(dplyr)
+airlines = tbl(con, "airlines")
+airports = tbl(con, "airports")
+flights = tbl(con,"flights")
+planes = tbl(con, "planes")
+weather = tbl(con, "weather")
+```
+
+We will use this data to do some analyses on the flights.
+
+(1) The flights table contains a variable called "dest" which states the airport the flight was going to. The airports table has the airport codes stores under a variable "faa". Create a new data object "df" which joins these two data sets such that we have all flights stored in the result. 
+
+    ```{r}
+    df = flights %>% left_join(airports, by = c("dest" = "faa"))
+    ```
+
+(1) `df` is not actually a result at this point. Surprisingly the query has still not touched the data base. `dplyr` will delay making a query until the very last moment. Examine the query with `df %>% show_query()`
+
+    ```{r}
+    df %>% show_query()
+    ```
+
+
+(1) By joining the tables you now have the latitude and longitude ("lat" and "lon") of the destination airports. Find the average arrival delay ("arr_delay") for each location and call the result `df2`.
+
+    ```{r}
+    df2 = df %>% 
+      group_by(lat,lon) %>%
+      summarise(delay = mean(arr_delay))
+    ```
+
+(1) Remove any rows that have an NA in calling the result `df3`.
+
+    ```{r}
+    df3 = df2 %>% 
+      filter(!is.na(lat) & !is.na(lon) & !is.na(delay))
+    ```
+
+(1) This sort of data is ideal for making a nice map. Try something like
+
+    ```{r, echo = TRUE}
+    library(leaflet) # load mapping library
+    pal = colorNumeric("YlOrRd",domain = collect(df3)$delay) # set up a colour palette
+    df3 %>% 
+      left_join(airports) %>% # join to get names again
+      collect %>% # collect to pull all the data into R
+      leaflet %>% # base map
+      # add some markers for the airports
+      addCircleMarkers(~lon,~lat,color = ~pal(delay),label = ~paste0(name," : ",delay), fillOpacity = 0.8) %>% 
+      addTiles # add background map
+    ```
+
+(1) It might be interesting to see if there are patterns in the delayed flights. Join the flights table with the airlines data and then find the average departure delay by airline company.
+
+    ```{r}
+    flights %>% 
+      left_join(airlines) %>%
+      group_by(name) %>% 
+      summarise(delay = mean(dep_delay)) %>% 
+      collect
+    ```
+
+(1) Use the flights data and the planes data to see which of the airplane manufacturers ran the most flights
+
+    ```{r}
+    flights %>% 
+      left_join(planes) %>% 
+      group_by(manufacturer) %>% 
+      summarise(n()) %>% 
+      collect
+    ```
+
+(1) The planes data also has the number of seats. If we assume that every flight was full, which day had the most people travel by air.
+
+    ```{r}
+    flights %>% 
+      left_join(planes) %>% 
+      group_by(year,month,day) %>% 
+      summarise(n = sum(seats)) %>% 
+      arrange(desc(n)) %>% 
+      filter(!is.na(n)) 
+    ## december is really popular for travel
+    ```
+
+(1) There are lots of interesting things that you can do with these 5 tables. Try to find something interesting about the flights data, maybe even produce a nice graphic. There will be a prize for whoever can come up with the most interesting (as decided by you).
