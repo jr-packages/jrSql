@@ -21,7 +21,7 @@ To begin this practical we will add some data to our database. The table below g
 ```{r, results="asis"}
 suppressPackageStartupMessages(library(dplyr))
 set.seed(1)
-data("FuelEconomy",package = "jRsql")
+data("FuelEconomy",package = "jrSql")
 df = cars2010 %>% sample_n(6) %>% select(EngDispl, NumCyl, Transmission, FE) 
 df[6,1] = 7
 df %>%
@@ -156,7 +156,7 @@ dbWithTransaction(
 The full cars data set from which the above subset is taken is part of the course package and can be loaded with
 
 ```{r, echo = TRUE, eval = FALSE}
-data("FuelEconomy", package = "jRsql")
+data("FuelEconomy", package = "jrSql")
 ```
 
 We can copy this data into the database with, to make life easier for ourselves we will turn the column names to all lower case first

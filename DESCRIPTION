@@ -7,10 +7,11 @@ Description: Data sets and practicals for the Introduction to SQL course run by 
 URL: http://www.jumpingrivers.com
 License: GPL-3
 Depends:
-    R (>= 3.2.0), 
+    R (>= 3.2.0)
 Imports:
-    dplyr (>= 0.7.0), RPostgreSQL
+    dplyr (>= 0.7.0), RPostgreSQL, DBI
 Suggests:
     knitr, tufte, rmarkdown, formatR
 VignetteBuilder: knitr
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
+Encoding: UTF-8
