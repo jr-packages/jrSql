@@ -30,18 +30,20 @@ fill_database = function(args = list(user = "jr", pass = "jr-pass",
 #' @inheritParams fill_database
 #' @importFrom DBI dbConnect
 #' @return logical TRUE if database accessible
+#' @param verbose logical if TRUE should give more info on errors
 #' @export
 check_database_exists = function(args = list(user = "jr", pass = "jr-pass",
                                              host = "localhost", port = 5432,
-                                             dbname = "test")){
+                                             dbname = "test"),
+                                 verbose = FALSE){
   x = tryCatch({con = DBI::dbConnect(RPostgreSQL::PostgreSQL(), host = args$host,
                                     password = args$pass, port = args$port,
                                     user = args$user, dbname = args$dbname)},
                error = function(e){
-                 print(e)
                  e
                } )
   if(inherits(x,"error")){
+    if(verbose) print(x)
     return(FALSE)
   }else{
     return(TRUE)
