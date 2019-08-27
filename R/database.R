@@ -134,6 +134,7 @@ chapter_check = function(){
 #' @inheritParams fill_database
 #' @importFrom DBI dbConnect
 #' @return A connection object
+#' @export
 chapter_connect = function(args = list(user = "jr", pass = "jr-pass",
                                        host = "localhost", port = 5432,
                                        dbname = "test")){
