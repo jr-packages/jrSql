@@ -1,4 +1,4 @@
-```{r}
+```{r, echo = FALSE}
 library(knitr)
 # opts_knit$set(out.format = "latex")
 knit_theme$set(knit_theme$get("greyscale0"))
@@ -18,7 +18,7 @@ knit_hooks$set(crop=hook_pdfcrop)
 
 To begin this practical we will add some data to our database. The table below gives some data on different cars and their fuel economy.
 
-```{r, results="asis"}
+```{r, results="asis", echo = FALSE}
 suppressPackageStartupMessages(library(dplyr))
 set.seed(1)
 data("FuelEconomy",package = "jrSql")
@@ -31,15 +31,18 @@ df %>%
 To create your connection to the database 
 
 ```{r, echo = TRUE, eval = FALSE}
-library(RPostgreSQL)
-drv = dbDriver("PostgreSQL")
+library(odbc)
+library(DBI)
 # everyones user name and password is different
 # database name is the same as your user name
-con = dbConnect(drv, user = "user.name", password = "user.password", dbname = "user.dbname")
+con = dbConnect(
+  odbc(), drv = "PostgreSQL", user = "user.name", 
+  password = "user.password", dbname = "user.dbname"
+)
 ```
 
 
-  (1) Create a new table called "fuel_economy" in your database with the appropriate variable types for the columns. Note that NumCyl should be an integer. 
+(1) Create a new table called "fuel_economy" in your database with the appropriate variable types for the columns. Note that NumCyl should be an integer. 
     ```{r, eval = FALSE}
     statement = "
     CREATE TABLE fuel_economy (
@@ -51,9 +54,8 @@ con = dbConnect(drv, user = "user.name", password = "user.password", dbname = "u
     "
     dbExecute(con, statement)
     ```
-      
-  (1) Populate your new table with the data. (Remeber `INSERT INTO` and `VALUES`)
-  
+
+(1) Populate your new table with the data. (Remeber `INSERT INTO` and `VALUES`) 
     ```{r, eval = FALSE}
     statement = "
     INSERT INTO fuel_economy (EngDispl, NumCyl, Transmission, FE)
@@ -67,9 +69,8 @@ con = dbConnect(drv, user = "user.name", password = "user.password", dbname = "u
     "
     dbExecute(con, statement)
     ```
-  
-  (1) Unfortunately the displacement value is wrong for the last car in the data set here. We should change the 7.0 to a 3.5. Use `UPDATE` and `SET` to amend the data.
-  
+
+(1) Unfortunately the displacement value is wrong for the last car in the data set here. We should change the 7.0 to a 3.5. Use `UPDATE` and `SET` to amend the data. 
     ```{r, eval = FALSE}
     statement = "
     UPDATE fuel_economy
@@ -78,9 +79,8 @@ con = dbConnect(drv, user = "user.name", password = "user.password", dbname = "u
     "
     dbExecute(con, statement)
     ```
-  
-  (1) Add a new text column called "gearbox", we will use this to have nicer labels for the transmission variable.
-  
+
+(1) Add a new text column called "gearbox", we will use this to have nicer labels for the transmission variable. 
     ```{r, eval = FALSE}
     statement = "
     ALTER TABLE fuel_economy
@@ -88,7 +88,8 @@ con = dbConnect(drv, user = "user.name", password = "user.password", dbname = "u
     "
     dbExecute(con, statement)
     ```
-  
+
+
 ## Something new
 
 We haven't spoken about SQL transaction during the lectures. Essentially a transaction is a collection of SQL clauses that we want to either all happen, or none happen. Essentially we want to create a guarantee that the table modification can't partially complete. Imagine the simple scenario of a bank monitoring balances of it's customers. Let's say Alice wants to pay Ben £100. In our hypothetical scenario we could use the following code to update the data table.
