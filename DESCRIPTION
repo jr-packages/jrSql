@@ -9,7 +9,7 @@ License: GPL-3
 Depends:
     R (>= 3.2.0)
 Imports:
-    dplyr (>= 0.7.0), RPostgreSQL, DBI
+    dplyr (>= 0.7.0), odbc, DBI
 Suggests:
     knitr, tufte, rmarkdown, formatR
 VignetteBuilder: knitr
