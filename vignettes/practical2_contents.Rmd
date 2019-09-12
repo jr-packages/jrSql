@@ -16,9 +16,9 @@ knitr::opts_chunk$set(eval = FALSE)
 
 ## `dplyr` and databases
 
-To being with we will grab the flights data that we were using in the final part of the lectures. You can install the package that contains this data with 
+To begin with we will grab the flights data that we were using in the final part of the lectures. You can install the package that contains this data and write it to the database with
 
-```{r, eval = FALSE}
+```{r, eval = FALSE, echo = TRUE}
 install.packages("nycflights13")
 library(nycflights13)
 
@@ -32,7 +32,7 @@ dbWriteTable(con, "weather", weather, overwrite = TRUE, row.names = FALSE)
 
 We can then get the R objects that represent these tables in a way that `dplyr` understands
 
-```{r}
+```{r, echo = TRUE}
 library(dplyr)
 airlines = tbl(con, "airlines")
 airports = tbl(con, "airports")
@@ -117,4 +117,4 @@ We will use this data to do some analyses on the flights.
     ## december is really popular for travel
     ```
 
-(1) There are lots of interesting things that you can do with these 5 tables. Try to find something interesting about the flights data, maybe even produce a nice graphic. There will be a prize for whoever can come up with the most interesting (as decided by you).
+(1) There are lots of interesting things that you can do with these 5 tables. Try to find something interesting about the flights data, maybe even produce a nice graphic. 
