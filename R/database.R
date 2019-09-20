@@ -4,13 +4,14 @@
 #'
 #' @param args a list of arguments to pass to the database connection
 #' @importFrom dplyr copy_to
-#' @importFrom odbc dbConnect odbc
+#' @importFrom DBI dbConnect
+#' @importFrom RPostgreSQL PostgreSQL
 #' @importFrom utils data
 #' @export
 fill_database = function(args = list(user = "jr", pass = "jr-pass",
                                      host = "localhost", port = 5432,
                                      dbname = "test")){
-  con = odbc::dbConnect(odbc::odbc(), drv = "PostgreSQL", host = args$host,
+  con = DBI::dbConnect(RPostgreSQL::PostgreSQL(), host = args$host,
                        password = args$pass, port = args$port,
                        user = args$user, dbname = args$dbname)
   e = new.env()
@@ -27,7 +28,8 @@ fill_database = function(args = list(user = "jr", pass = "jr-pass",
 #' Checks whether a post gres database is accessible to the session
 #'
 #' @inheritParams fill_database
-#' @importFrom odbc dbConnect odbc
+#' @importFrom DBI dbConnect
+#' @importFrom RPostgreSQL PostgreSQL
 #' @return logical TRUE if database accessible
 #' @param verbose logical if TRUE should give more info on errors
 #' @export
@@ -35,9 +37,9 @@ check_database_exists = function(args = list(user = "jr", pass = "jr-pass",
                                              host = "localhost", port = 5432,
                                              dbname = "test"),
                                  verbose = FALSE){
-  x = tryCatch({con = odbc::dbConnect(odbc::odbc(), drv = "PostgreSQL", host = args$host,
-                                    password = args$pass, port = args$port,
-                                    user = args$user, dbname = args$dbname)},
+  x = tryCatch({con = DBI::dbConnect(RPostgreSQL::PostgreSQL(), host = args$host,
+                                     password = args$pass, port = args$port,
+                                     user = args$user, dbname = args$dbname)},
                error = function(e){
                  e
                } )
@@ -133,14 +135,15 @@ chapter_check = function(){
 #' database is available first.
 #'
 #' @inheritParams fill_database
-#' @importFrom odbc dbConnect odbc
+#' @importFrom DBI dbConnect
+#' @importFrom RPostgreSQL PostgreSQL
 #' @return A connection object
 #' @export
 chapter_connect = function(args = list(user = "jr", pass = "jr-pass",
                                        host = "localhost", port = 5432,
                                        dbname = "test")){
   chapter_check()
-  con = odbc::dbConnect(odbc::odbc(), drv = "PostgreSQL", host = args$host,
+  con = DBI::dbConnect(RPostgreSQL::PostgreSQL(), host = args$host,
                        password = args$pass, port = args$port,
                        user = args$user, dbname = args$dbname)
   return(con)

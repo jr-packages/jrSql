@@ -1,7 +1,10 @@
 ---
 title: "Solutions 1"
 author: "Jumping Rivers"
-output: rmarkdown::html_vignette
+output:
+  tufte::tufte_handout:
+    latex_engine: xelatex
+  tufte::tufte_html: default
 vignette: >
   %\VignetteIndexEntry{solutions1}
   %\VignetteEngine{knitr::rmarkdown}
