@@ -81,7 +81,12 @@ We will use this data to do some analyses on the flights.
       collect %>% # collect to pull all the data into R
       leaflet %>% # base map
       # add some markers for the airports
-      addCircleMarkers(~lon,~lat,color = ~pal(delay),label = ~paste0(name," : ",delay), fillOpacity = 0.8) %>% 
+      addCircleMarkers(
+        ~lon,~lat,
+        color = ~pal(delay),
+        label = ~paste0(name," : ",delay), 
+        fillOpacity = 0.8
+      ) %>% 
       addTiles # add background map
     ```
 
