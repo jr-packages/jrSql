@@ -1,6 +1,10 @@
 language: r
 cache: packages
 
+env:
+  global:
+    - ALLOWED_NOTES=1
+
 notifications:
   email:
     recipients:
