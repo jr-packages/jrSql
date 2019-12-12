@@ -3,14 +3,14 @@ library(knitr)
 # opts_knit$set(out.format = "latex")
 knit_theme$set(knit_theme$get("greyscale0"))
 
-options(replace.assign=FALSE,width=50)
+options(replace.assign = FALSE, width = 50)
 
-opts_chunk$set(fig.path='figure/graphics-', 
-               cache.path='cache/graphics-', 
-               fig.align='center', 
-               dev='pdf', fig.width=5, fig.height=5, 
-               fig.show='hold', cache=FALSE, par=TRUE)
-knit_hooks$set(crop=hook_pdfcrop)
+opts_chunk$set(fig.path = "figure/graphics-",
+               cache.path = "cache/graphics-",
+               fig.align = "center",
+               dev = "pdf", fig.width = 5, fig.height = 5,
+               fig.show = "hold", cache = FALSE, par = TRUE)
+knit_hooks$set(crop = hook_pdfcrop)
 ```
 
 
@@ -21,9 +21,9 @@ To begin this practical we will add some data to our database. The table below g
 ```{r, results="asis", echo = FALSE}
 suppressPackageStartupMessages(library(dplyr))
 set.seed(1)
-data("FuelEconomy",package = "jrSql")
-df = cars2010 %>% sample_n(6) %>% select(EngDispl, NumCyl, Transmission, FE) 
-df[6,1] = 7
+data("FuelEconomy", package = "jrSql")
+df = cars2010 %>% sample_n(6) %>% select(EngDispl, NumCyl, Transmission, FE)
+df[6, 1] = 7
 df %>%
   knitr::kable()
 ```
@@ -36,7 +36,7 @@ library(DBI)
 # everyones user name and password is different
 # database name is the same as your user name
 con = dbConnect(
-  odbc(), drv = "PostgreSQL", user = "user.name", 
+  odbc(), drv = "PostgreSQL", user = "user.name",
   password = "user.password", dbname = "user.dbname"
 )
 ```
@@ -47,7 +47,7 @@ con = dbConnect(
     statement = "
     CREATE TABLE fuel_economy (
       EngDispl double precision,
-      NumCyl integer, 
+      NumCyl integer,
       Transmission text,
       FE double precision
     );
@@ -59,7 +59,7 @@ con = dbConnect(
     ```{r, eval = FALSE}
     statement = "
     INSERT INTO fuel_economy (EngDispl, NumCyl, Transmission, FE)
-      VALUES 
+      VALUES
       (2.0, 4, 'M5', 46.4387),
       (3.6, 6, 'S6', 40.0000),
       (2.5, 4, 'S4', 32.9103),
@@ -74,8 +74,8 @@ con = dbConnect(
     ```{r, eval = FALSE}
     statement = "
     UPDATE fuel_economy
-      SET EngDispl = 3.5 
-      WHERE EngDispl = 7.0;
+    SET EngDispl = 3.5
+    WHERE EngDispl = 7.0;
     "
     dbExecute(con, statement)
     ```
@@ -122,10 +122,11 @@ The `DBI` R package also provides a useful function for this
 
 ```{r, echo = TRUE, eval = FALSE}
 dbWithTransaction(
-  con, 
-  {
-    dbExecute(con, "UPDATE balances SET amount = amount - 100 WHERE customer = 'Alice';")
-    dbExecute(con, "UPDATE balances SET amount = amount + 100 WHERE customer = 'Ben';")
+  con, {
+    dbExecute(con, "UPDATE balances SET amount
+              = amount - 100 WHERE customer = 'Alice';")
+    dbExecute(con, "UPDATE balances SET amount
+              = amount + 100 WHERE customer = 'Ben';")
   }
 )
 ```
@@ -175,7 +176,7 @@ The remaining questions concern this data, solutions should be obtained using SQ
     SELECT * FROM cars
       WHERE engdispl >= 3.0;
     "
-    df = dbGetQuery(con,query)
+    df = dbGetQuery(con, query)
     nrow(df)
     # 695
     ```
@@ -188,7 +189,7 @@ The remaining questions concern this data, solutions should be obtained using SQ
       ORDER BY fe DESC
       LIMIT 1;
     "
-    dbGetQuery(con,query)
+    dbGetQuery(con, query)
     # 69.6404
     ```
 
@@ -198,7 +199,7 @@ The remaining questions concern this data, solutions should be obtained using SQ
     query = "
     SELECT DISTINCT transmission FROM cars;
     "
-    dbGetQuery(con,query)
+    dbGetQuery(con, query)
     # 16
     ```
 

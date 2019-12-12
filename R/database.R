@@ -1,6 +1,7 @@
 #' Function for filling an empty database
 #'
-#' Function should only be used for setting up a database for building the notes and slides
+#' Function should only be used for setting up a database for building
+#' the notes and slides
 #'
 #' @param args a list of arguments to pass to the database connection
 #' @importFrom dplyr copy_to
@@ -10,17 +11,19 @@
 #' @export
 fill_database = function(args = list(user = "jr", pass = "jr-pass",
                                      host = "localhost", port = 5432,
-                                     dbname = "test")){
+                                     dbname = "test")) {
   con = DBI::dbConnect(RPostgreSQL::PostgreSQL(), host = args$host,
                        password = args$pass, port = args$port,
                        user = args$user, dbname = args$dbname)
   e = new.env()
   data(diamonds, package = "ggplot2", envir = e)
-  message('Adding diamonds data to database.')
-  dplyr::copy_to(con, e$diamonds, name = "diamonds" , overwrite = TRUE, temporary = FALSE)
+  message("Adding diamonds data to database.")
+  dplyr::copy_to(con, e$diamonds, name = "diamonds",
+                 overwrite = TRUE, temporary = FALSE)
   data(movies, package = "ggplot2movies", envir = e)
-  message('Adding movies data to databse')
-  dplyr::copy_to(con, e$movies, name = "movies", overwrite = TRUE, temporary = FALSE)
+  message("Adding movies data to databse")
+  dplyr::copy_to(con, e$movies, name = "movies",
+                 overwrite = TRUE, temporary = FALSE)
 }
 
 #' Check database
@@ -36,15 +39,17 @@ fill_database = function(args = list(user = "jr", pass = "jr-pass",
 check_database_exists = function(args = list(user = "jr", pass = "jr-pass",
                                              host = "localhost", port = 5432,
                                              dbname = "test"),
-                                 verbose = FALSE){
-  x = tryCatch({con = DBI::dbConnect(RPostgreSQL::PostgreSQL(), host = args$host,
-                                     password = args$pass, port = args$port,
-                                     user = args$user, dbname = args$dbname)},
-               error = function(e){
+                                 verbose = FALSE) {
+  x = tryCatch({
+    con = DBI::dbConnect(RPostgreSQL::PostgreSQL(),
+                          host = args$host, password = args$pass,
+                          port = args$port, user = args$user,
+                          dbname = args$dbname)},
+               error = function(e) {
                  e
-               } )
-  if(inherits(x,"error")){
-    if(verbose) print(x)
+               })
+  if (inherits(x, "error")) {
+    if (verbose) print(x)
     return(FALSE)
   }else{
     return(TRUE)
@@ -56,7 +61,7 @@ check_database_exists = function(args = list(user = "jr", pass = "jr-pass",
 #' Copies the docker compose file to the local directory
 #' @param target target path for compose file
 #' @export
-copy_compose = function(target = "."){
+copy_compose = function(target = ".") {
   file = system.file("docker-compose.yml", package = "jrSql")
   file.copy(file, target, overwrite = TRUE)
 }
@@ -66,7 +71,7 @@ copy_compose = function(target = "."){
 #' checks for the existence of a docker compose file
 #' @param dir directory path to check
 #' @export
-check_compose = function(dir = "."){
+check_compose = function(dir = ".") {
   file.exists(paste0(dir, "/docker-compose.yml"))
 }
 
@@ -76,8 +81,8 @@ check_compose = function(dir = "."){
 #'
 #' @param dir location from which to call docker-compose
 #' @export
-start_database = function(dir = "."){
-  if(!check_compose(dir)){
+start_database = function(dir = ".") {
+  if (!check_compose(dir)) {
     stop("Compose file missing, run copy_compose()")
   }
   wd = setwd(dir)
@@ -91,8 +96,8 @@ start_database = function(dir = "."){
 #'
 #' @inheritParams start_database
 #' @export
-stop_database = function(dir = "."){
-  if(!check_compose(dir)){
+stop_database = function(dir = ".") {
+  if (!check_compose(dir)) {
     stop("No compose file found in this directory.")
   }
   system("docker-compose down")
@@ -102,13 +107,13 @@ stop_database = function(dir = "."){
 #'
 #' runs all steps of database set up in order using default settings
 #' @export
-setup_database = function(){
+setup_database = function() {
   message("Copying compose from package /inst")
   copy_compose()
   message("Starting the database")
   start_database()
   message("Waiting for initialisation")
-  while(!check_database_exists()){
+  while (!check_database_exists()) {
     message(".", appendLF = FALSE)
     Sys.sleep(0.5)
   }
@@ -122,8 +127,8 @@ setup_database = function(){
 #' A function intended to be used at the start of each chapter to
 #' check whether the database is available
 #' @export
-chapter_check = function(){
-  if(!check_database_exists()){
+chapter_check = function() {
+  if (!check_database_exists()) {
     stop("Database doesn't exist, start and fill the database.")
   }
 }
@@ -141,7 +146,7 @@ chapter_check = function(){
 #' @export
 chapter_connect = function(args = list(user = "jr", pass = "jr-pass",
                                        host = "localhost", port = 5432,
-                                       dbname = "test")){
+                                       dbname = "test")) {
   chapter_check()
   con = DBI::dbConnect(RPostgreSQL::PostgreSQL(), host = args$host,
                        password = args$pass, port = args$port,
