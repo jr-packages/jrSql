@@ -1,18 +1,18 @@
 Type: Package
 Package: jrSql
 Title: Jumping Rivers: Introduction to SQL
-Version: 0.1.3
+Version: 0.1.3.9001
 Authors@R: 
-    person(given = "Jamie",
-           family = "Owen",
+    person(given = "Jumping",
+           family = "Rivers",
            role = c("aut", "cre"),
-           email = "jamie@jumpingrivers.com")
+           email = "info@jumpingrivers.com")
 Description: Data sets and practicals for the Introduction to
     SQL course run by Jumping Rivers.
 License: GPL-3
-URL: http://www.jumpingrivers.com
+URL: https://www.jumpingrivers.com
 Depends:
-    R (>= 3.2.0)
+    R (>= 3.4.0)
 Imports:
     DBI,
     dplyr (>= 0.7.0),
