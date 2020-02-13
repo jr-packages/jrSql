@@ -16,11 +16,10 @@ knitr::opts_chunk$set(eval = FALSE)
 
 ## `dplyr` and databases
 
-To begin with we will grab the flights data that we were using in the final part of the lectures. You can install the package that contains this data and write it to the database with
+To begin with we will grab the flights data that we were using in the final part of the lectures. You can load data and write it to the database with
 
 ```{r, eval = FALSE, echo = TRUE}
-install.packages("nycflights13")
-library(nycflights13)
+library("nycflights13")
 
 ## remember to make the connection to your database first (see chapter 1)
 dbWriteTable(con, "airlines", airlines, overwrite = TRUE, row.names = FALSE)

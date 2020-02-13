@@ -24,6 +24,7 @@ get_default_args = function(args = NULL) {
 #' @importFrom utils data
 #' @export
 fill_database = function(args = NULL) {
+  message("\n", "Filling database")
   args = get_default_args(args)
   con = DBI::dbConnect(RPostgreSQL::PostgreSQL(), host = args$host,
                        password = args$pass, port = args$port,
@@ -72,8 +73,9 @@ check_database_exists = function(args = NULL, verbose = FALSE) {
 #' @export
 chapter_check = function(args) {
   if (!check_database_exists(args)) {
-    stop("Database doesn't exist, start and fill the database.")
+    stop("Database doesn't exist, start and fill the database.", call. = FALSE)
   }
+  return(invisible(NULL))
 }
 
 #' chapter connect
@@ -89,7 +91,8 @@ chapter_check = function(args) {
 #' @export
 chapter_connect = function(args = NULL) {
   args = get_default_args(args)
-  chapter_check(args)
+  if (!is_gitlab()) chapter_check(args)
+
   con = DBI::dbConnect(RPostgreSQL::PostgreSQL(), host = args$host,
                        password = args$pass, port = args$port,
                        user = args$user, dbname = args$dbname)

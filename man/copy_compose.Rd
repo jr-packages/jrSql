@@ -2,9 +2,21 @@
 % Please edit documentation in R/db_compose.R
 \name{copy_compose}
 \alias{copy_compose}
+\alias{check_compose}
+\alias{start_compose}
+\alias{stop_compose}
+\alias{setup_compose}
 \title{Copy compose}
 \usage{
 copy_compose(target = ".")
+
+check_compose(target = ".")
+
+start_compose(target = ".")
+
+stop_compose(target = ".")
+
+setup_compose()
 }
 \arguments{
 \item{target}{target path for compose file}
