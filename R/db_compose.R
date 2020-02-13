@@ -1,3 +1,7 @@
+check_compose = function(target = ".") {
+  file.exists(file.path(target, "docker-compose.yml"))
+}
+
 #' Copy compose
 #'
 #' Copies the docker compose file to the local directory
@@ -9,13 +13,7 @@ copy_compose = function(target = ".") {
   file.copy(file, target, overwrite = TRUE)
 }
 
-#' @rdname copy_compose
-#' @export
-check_compose = function(target = ".") {
-  file.exists(file.path(target, "docker-compose.yml"))
-}
 
-# start_database = function(target = ".") {
 #' @rdname copy_compose
 #' @export
 start_compose = function(target = ".") {
@@ -28,7 +26,6 @@ start_compose = function(target = ".") {
   setwd(wd)
 }
 
-# stop_database = function(target = ".") {
 #' @rdname copy_compose
 #' @export
 stop_compose = function(target = ".") {
@@ -51,5 +48,5 @@ setup_compose = function() {
   }
 
   fill_database(args = NULL)
-  message("Done")
+  message("\n Done")
 }

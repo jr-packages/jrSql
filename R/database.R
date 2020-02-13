@@ -38,6 +38,7 @@ fill_database = function(args = NULL) {
   message("Adding movies data to databse")
   dplyr::copy_to(con, e$movies, name = "movies",
                  overwrite = TRUE, temporary = FALSE)
+  DBI::dbDisconnect(con)
 }
 
 #' Check database
@@ -62,6 +63,8 @@ check_database_exists = function(args = NULL, verbose = FALSE) {
   )
   if (inherits(x, "error") && verbose) {
     message(x)
+  } else {
+    DBI::dbDisconnect(con)
   }
   return(!inherits(x, "error"))
 }
