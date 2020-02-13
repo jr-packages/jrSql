@@ -4,12 +4,15 @@
 \alias{fill_database}
 \title{Function for filling an empty database}
 \usage{
-fill_database(args = list(user = "jr", pass = "jr-pass", host =
-  "localhost", port = 5432, dbname = "test"))
+fill_database(
+  args = list(user = "jr", pass = "jr-pass", host = "localhost", port = 5432, dbname =
+    "test")
+)
 }
 \arguments{
 \item{args}{a list of arguments to pass to the database connection}
 }
 \description{
-Function should only be used for setting up a database for building the notes and slides
+Function should only be used for setting up a database for building
+the notes and slides
 }

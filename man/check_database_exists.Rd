@@ -4,8 +4,11 @@
 \alias{check_database_exists}
 \title{Check database}
 \usage{
-check_database_exists(args = list(user = "jr", pass = "jr-pass", host =
-  "localhost", port = 5432, dbname = "test"), verbose = FALSE)
+check_database_exists(
+  args = list(user = "jr", pass = "jr-pass", host = "localhost", port = 5432, dbname =
+    "test"),
+  verbose = FALSE
+)
 }
 \arguments{
 \item{args}{a list of arguments to pass to the database connection}

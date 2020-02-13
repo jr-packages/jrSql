@@ -15,7 +15,9 @@ Depends:
     R (>= 3.4.0)
 Imports:
     DBI,
+    dbplyr,
     dplyr (>= 0.7.0),
+    ggplot2movies,
     odbc,
     RPostgreSQL
 Suggests:
@@ -26,4 +28,4 @@ Suggests:
 VignetteBuilder: 
     knitr
 Encoding: UTF-8
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
