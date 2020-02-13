@@ -4,13 +4,11 @@
 \alias{chapter_connect}
 \title{chapter connect}
 \usage{
-chapter_connect(
-  args = list(user = "jr", pass = "jr-pass", host = "localhost", port = 5432, dbname =
-    "test")
-)
+chapter_connect(args = NULL)
 }
 \arguments{
-\item{args}{a list of arguments to pass to the database connection}
+\item{args}{a list of arguments to pass to the database connection. If NULL
+use default args supplied by \code{get_default_args}}
 }
 \value{
 A connection object

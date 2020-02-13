@@ -2,9 +2,14 @@
 % Please edit documentation in R/database.R
 \name{chapter_check}
 \alias{chapter_check}
-\title{chapter check}
+\title{A function intended to be used at the start of each chapter to
+check whether the database is available}
 \usage{
-chapter_check()
+chapter_check(args)
+}
+\arguments{
+\item{args}{a list of arguments to pass to the database connection. If NULL
+use default args supplied by \code{get_default_args}}
 }
 \description{
 A function intended to be used at the start of each chapter to
